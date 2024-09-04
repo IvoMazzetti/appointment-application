@@ -36,6 +36,5 @@ Route::get('/calendar/{year}/{month}', [CalendarController::class, 'getMonthData
 
 
 Route::get('/calendar/time', [CalendarController::class, 'getAvailableSlots'])->name('calendar.time');
-
-
+Route::post('/appointment/store', [AppointmentController::class, 'store'])->name('appointment.store');
 require __DIR__.'/auth.php';
