@@ -65,6 +65,4 @@ class Service extends Model
         $minutes = $this->attributes['duration'] % 60;
         return sprintf('%02d:%02d', $hours, $minutes);
     }
-
-
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use App\Models\Service;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -11,7 +12,8 @@ class ServiceController extends Controller
 {
     public function index()
     {
-        $services = Service::all()->where('company_id', Auth::user()->getAuthIdentifier());
+        $company_id = Company::where('user_id', Auth::user()->getAuthIdentifier())->value('id');
+        $services = Service::all()->where('company_id', $company_id);
         return Inertia::render('Service/Index', [
             'services' => $services
         ]);
@@ -27,7 +29,7 @@ class ServiceController extends Controller
         ]);
 
         $validated['duration'] = $this->convertTimeToMinutes($validated['duration']);
-        $validated['company_id'] = Auth::user()->getAuthIdentifier();
+        $validated['company_id'] = Company::where('user_id', Auth::user()->getAuthIdentifier())->value('id');
 
         $service = new Service();
         $service->fill($validated);

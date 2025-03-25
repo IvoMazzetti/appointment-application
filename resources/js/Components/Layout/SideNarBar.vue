@@ -57,7 +57,7 @@ export default {
       mainNavigation: [
         {href: '/', label: 'Home', icon: HomeIcon},
         {href: '/appointments', label: 'Appointments', icon: CalendarIcon},
-        {href: '/service', label: 'Services', icon: BriefcaseIcon},
+        {href: '/services', label: 'Services', icon: BriefcaseIcon},
       ],
       libraryNavigation: [
         {href: '/', label: 'Favorites', icon: HeartIcon},

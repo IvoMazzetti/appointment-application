@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
-use Illuminate\Http\Client\Request;
+use App\Models\Company;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -19,21 +20,30 @@ class AppointmentController extends Controller
         $validated = $request->validate([
             'service' => 'required|max:255',
             'name' => 'required|string',
-            'phone' => 'required|string',
-            'email' => 'string',
+            'phone' => 'required|integer',
+            'email' => 'nullable|string',
             'notes' => 'nullable|string',
-            'date' => 'required|date',
-            'time' => 'required|date_format:H:i',
+            'day' => 'required|date',
+            'time' => 'required|date_format:H:i:s',
         ]);
 
-        $validated['duration'] = $this->convertTimeToMinutes($validated['duration']);
-        $validated['company_id'] = Auth::user()->getAuthIdentifier();
+        $company = $this->getCompany(request()->user()->id);
+        $validated = array_merge($validated, [
+            'company_id' => $company->id,
+            'service_id' => $validated['service'],
+            'terms_and_conditions' => true,
+            'date' => $validated['day'],
+        ]);
+        unset($validated['service']);
 
-        $service = new Appointment();
-        $service->fill($validated);
-        $service->save();
+        Appointment::create($validated);
 
-        // Redirect or return a response
-        return redirect()->route('service.index')->with('success', 'Service created successfully.');
+        return redirect()->route('appointment.index')->with('success', 'Service created successfully.');
     }
+
+    private function getCompany($userId)
+    {
+        return Company::where('user_id', $userId)->first();
+    }
+
 }

@@ -27,14 +27,20 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/services', [ServiceController::class, 'index'])->name('service.index');
-    Route::post('/services', [ServiceController::class, 'store'])->name('service.store');
-    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+    Route::post('/services', [ServiceController::class, 'store'])->name(name: 'service.store');
+    Route::get('/appointments', [CalendarController::class, 'index'])->name('appointment.index');
+
+    Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointment.store');
+
 });
 
-Route::get('/appointment', [AppointmentController::class, 'index'])->name('appointment.index');
+Route::get('/appointment', [AppointmentController::class, 'index'])->name('calendar.index');
 Route::get('/calendar/{year}/{month}', [CalendarController::class, 'getMonthData']);
 
 
+Route::get('/getAvailableSlots', [CalendarController::class, 'getAvailableSlots'])->name('appointments.available');
+
+
 Route::get('/calendar/time', [CalendarController::class, 'getAvailableSlots'])->name('calendar.time');
-Route::post('/appointment/store', [AppointmentController::class, 'store'])->name('appointment.store');
+
 require __DIR__.'/auth.php';

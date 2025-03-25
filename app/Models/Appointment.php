@@ -21,6 +21,7 @@ class Appointment extends Model
         'time',
         'terms_and_conditions',
         'service_id',
+        'company_id',
     ];
 
     public function service(): HasOne

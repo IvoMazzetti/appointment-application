@@ -7,7 +7,7 @@
                  border-b space-x-6"
     >
         <form action="" class="w-full max-w-md">
-            <div class="relative flex items-center text-gray-400 focus-within:text-gray-600">
+            <div class="relative flex cv items-center text-gray-400 focus-within:text-gray-600">
                 <SearchIcon class="w-5 h-5 absolute ml-3 pointer-events-none"/>
                 <input
                     type="text"

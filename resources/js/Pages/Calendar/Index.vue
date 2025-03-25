@@ -27,6 +27,9 @@ const form = ref({
   time: '',
 });
 
+
+
+
 onMounted(async () => {
   try {
     const servicesResponse = await axios.get('/api/calendar/services');
@@ -36,6 +39,7 @@ onMounted(async () => {
   } catch (error) {
     console.error('Error fetching services:', error.response?.data || error.message);
   }
+
 });
 
 const fetchAvailableSlots = async () => {
@@ -64,6 +68,8 @@ const fetchAvailableSlots = async () => {
 
 const submitForm = async () => {
   isSubmitting.value = true;
+
+  console.log(form.value);
 
   try {
     await useForm(form.value).post(route('appointment.store'), {
@@ -107,22 +113,21 @@ const getFormattedDate = (returnString) => {
 
 <template>
   <AuthenticatedLayout>
-    <div class="p-4 bg-white shadow-md rounded-lg border max-h-screen overflow-hidden relative">
-      <div class="flex justify-between items-center mb-4">
+    <div class="relative max-h-screen p-4 overflow-hidden bg-white border rounded-lg shadow-md">
+      <div class="flex items-center justify-between mb-4">
         <div class="block">
           <h2 class="text-lg font-bold">{{ calendarData.monthName }}</h2>
           <p class="text-sm text-gray-600">{{ calendarData.weekRange }}</p>
         </div>
-        <button @click="togglePanel" class="bg-blue-500 text-white px-4 py-1 rounded-md shadow-md">
+        <button @click="togglePanel" class="px-4 py-1 text-white bg-blue-500 rounded-md shadow-md">
           Criar Marcação
         </button>
       </div>
 
-
-      <div class="overflow-auto h-full relative">
+      <div class="relative h-full overflow-auto">
         <div class="grid grid-cols-[80px_repeat(7,_1fr)]  grid-rows-[auto_repeat(12,_1fr)]  h-full relative">
           <!-- GMT+1 Column -->
-          <div class="rounded-tl-lg border p-3 text-xs flex items-center justify-center">
+          <div class="flex items-center justify-center p-3 text-xs border rounded-tl-lg">
             <h3 class="font-bold text-gray-400">GMT+1</h3>
           </div>
 
@@ -138,36 +143,35 @@ const getFormattedDate = (returnString) => {
             <div>
               <span class="mr-2">{{ day.name }}</span>
               <span :class="[
-                                'text-md',
-                                day.isToday ? 'text-blue-500' : 'text-black'
-                              ]">
-                            {{ day.numberDay }}
-                          </span>
+                    'text-md',
+                    day.isToday ? 'text-blue-500' : 'text-black'
+                ]">
+              {{ day.numberDay }}
+            </span>
             </div>
           </div>
 
           <!-- Loop through each hour to create a row -->
           <template v-for="hour in hours" :key="hour">
             <div
-                class="border  p-1 text-center text-xs no-border-first flex items-center justify-center h-14">
+                class="flex items-center justify-center p-1 text-xs text-center border no-border-first h-14">
               <span class="text-gray-400">{{ hour }}</span>
             </div>
 
             <!-- Day Columns with Events -->
             <div v-for="(day, dayIndex) in calendarData.days" :key="dayIndex" :class="[
-                              'border p-1 text-xs bg-gray-50',
-                              {
-                                'rounded-tr-lg': dayIndex === calendarData.days.length - 1 && hour === '19:00'
-                              }
-                            ]" :id="`cell-${day.date}-${hour}`"
-            >
-              <div class="h-full flex   relative">
-                <div v-for="event in getEvents(day.date, hour)" :key="event.id" class="flex text-white"
-                     :id="`event-${event.id}`"
-                     :style="getEventStyle(event)"
-                >
-                  <span class="mt-1 ml-2"> {{ event.name }}</span>
-                </div>
+            'border p-1 text-xs bg-gray-50',
+            {
+                'rounded-tr-lg': dayIndex === calendarData.days.length - 1 && hour === '19:00'
+            }
+            ]" :id="`cell-${day.date}-${hour}`">
+              <div class="relative flex h-full">
+                  <!-- Loop through events for the specific day and hour -->
+                  <div v-for="event in getEvents(day.date, hour)" :key="event.id" class="flex text-white"
+                      :id="`event-${event.id}`"
+                      :style="getEventStyle(event)">
+                    <span class="mt-1 ml-2">{{ event.name }}</span>
+                  </div>
               </div>
             </div>
           </template>
@@ -178,7 +182,7 @@ const getFormattedDate = (returnString) => {
     <!-- OVERLAY AND SIDE FORM -->
     <div v-if="isPanelOpen"
          @click="togglePanel"
-         class="fixed inset-0 bg-black opacity-50 z-30"
+         class="fixed inset-0 z-30 bg-black opacity-50"
     ></div>
 
     <div
@@ -188,7 +192,7 @@ const getFormattedDate = (returnString) => {
     >
       <div class="p-6">
         <form @submit.prevent="submitForm" id="appointmentForm">
-          <label for="appointmentForm" class="text-xl font-semibold mb-4">Criar nova marcação</label>
+          <label for="appointmentForm" class="mb-4 text-xl font-semibold">Criar nova marcação</label>
           <!-- Appointment Service -->
           <div class="mb-4">
             <label for="appointmentService" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Escolha
@@ -206,7 +210,7 @@ const getFormattedDate = (returnString) => {
               </option>
             </select>
 
-            <span v-if="errors.service" class="text-red-500 text-sm">{{ errors.service }}</span>
+            <span v-if="errors.service" class="text-sm text-red-500">{{ errors.service }}</span>
           </div>
 
           <!-- Appointment Name -->
@@ -215,7 +219,7 @@ const getFormattedDate = (returnString) => {
             <input
                 type="text"
                 id="appointmentName"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                class="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 v-model="form.name"
                 required
             />
@@ -228,7 +232,7 @@ const getFormattedDate = (returnString) => {
             <input
                 type="number"
                 id="appointmentPhone"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                class="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 v-model="form.phone"
                 required
             />
@@ -241,7 +245,7 @@ const getFormattedDate = (returnString) => {
             <input
                 type="email"
                 id="appointmentEmail"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                class="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 v-model="form.email"
                 required
             />
@@ -254,7 +258,7 @@ const getFormattedDate = (returnString) => {
             <input
                 type="text"
                 id="appointmentNotes"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                class="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 v-model="form.notes"
                 required
             />
@@ -281,7 +285,7 @@ const getFormattedDate = (returnString) => {
                   class="mr-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Select date">
               <button @click="fetchAvailableSlots" type="button"
-                      class="ml-2 inline-flex items-center w-full py-2 me-2 justify-center text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                      class="inline-flex items-center justify-center w-full py-2 ml-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg me-2 focus:outline-none hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                 <svg class="w-4 h-4 text-gray-800 dark:text-white me-2" aria-hidden="true"
                      xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                      viewBox="0 0 24 24">
@@ -296,7 +300,7 @@ const getFormattedDate = (returnString) => {
           </div>
 
           <div class="mb-4">
-            <div id="timeSlotsDiv" class="pt-5 flex flex-col rtl:space-x-reverse">
+            <div id="timeSlotsDiv" class="flex flex-col pt-5 rtl:space-x-reverse">
               <label for="timeSlotsDiv" class="">Horários para dia {{ getFormattedDate(true) }}:</label>
               <div class="w-full">
                 <label for="timeSlots" class="sr-only">
@@ -313,9 +317,9 @@ const getFormattedDate = (returnString) => {
                         name="timetable"
                     />
                     <label
-                        for="'slot-' + index"
+                        :for="'slot-' + index"
                         :key="'slot-' + index"
-                        class="inline-flex items-center justify-center w-full p-2 text-sm font-medium text-center bg-white border rounded-lg cursor-pointer text-blue-600 border-blue-600 dark:hover:text-white dark:border-blue-500 dark:peer-checked:border-blue-500 peer-checked:border-blue-600 peer-checked:bg-blue-600 hover:text-white peer-checked:text-white hover:bg-blue-500 dark:text-blue-500 dark:bg-gray-900 dark:hover:bg-blue-600 dark:hover:border-blue-600 dark:peer-checked:bg-blue-500"
+                        class="inline-flex items-center justify-center w-full p-2 text-sm font-medium text-center text-blue-600 bg-white border border-blue-600 rounded-lg cursor-pointer dark:hover:text-white dark:border-blue-500 dark:peer-checked:border-blue-500 peer-checked:border-blue-600 peer-checked:bg-blue-600 hover:text-white peer-checked:text-white hover:bg-blue-500 dark:text-blue-500 dark:bg-gray-900 dark:hover:bg-blue-600 dark:hover:border-blue-600 dark:peer-checked:bg-blue-500"
                     >
                       {{ slot.slice(0, 5) }}
                     </label>
@@ -329,7 +333,7 @@ const getFormattedDate = (returnString) => {
           <button
               :disabled="isSubmitting"
               type="submit"
-              class="py-2 px-5 mt-3 rounded-xl text-white bg-blue-600"
+              class="px-5 py-2 mt-3 text-white bg-blue-600 rounded-xl"
           >
             Guardar
           </button>
@@ -345,27 +349,18 @@ import axios from "axios";
 import {ref} from 'vue';
 
 export default {
+  props: {
+    companyId: Number,
+  },
+  mounted() {
+    this.fetchEvents();
+  },
   components: {AuthenticatedLayout},
   data() {
     const today = new Date();
     const weekStart = this.getStartOfWeek(today);
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekEnd.getDate() + 6);
-
-    const events = [
-      {
-        id: 1,
-        date: '2024-09-04',
-        hour: '12:00',
-        name: 'Cabelereiro',
-      },
-      {
-        id: 3,
-        date: '2024-09-06',
-        hour: '08:00',
-        name: 'Pedicure',
-      },
-    ];
 
     return {
       calendarData: {
@@ -374,7 +369,7 @@ export default {
         weekRange: this.getWeekRange(weekStart, weekEnd),
       },
       hours: Array.from({length: 12}, (v, i) => `${String(i + 8).padStart(2, '0')}:00`),
-      events: events, // Add the events to data
+      events: [], // Initialize events as an empty array
     };
   },
   methods: {
@@ -417,11 +412,6 @@ export default {
       const today = new Date();
       return `Semana de  ${formatDate(startDate)} - ${formatDate(endDate)} de ${today.getFullYear()}`;
     },
-    getEvents(date, hour) {
-      return this.events.filter(event => {
-        return event.date === date && event.hour === hour;
-      });
-    },
     getEventStyle(event) {
       return {
         cursor: 'pointer',
@@ -437,6 +427,26 @@ export default {
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap'
       };
+    },
+    async fetchEvents() {
+      try {
+        const response = await axios.get('/api/calendar/bookedSlots', {
+            params: {
+                companyId: this.companyId,
+            }
+        });
+        this.events = response.data.appointments;
+        console.log(this.events);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    },
+    getEvents(date, hour) {
+        return this.events.filter(event => {
+            console.log(date, hour);
+            console.log(this.events); 
+            return event.date === date && event.start_time.startsWith(hour);
+      });
     },
   }
 };

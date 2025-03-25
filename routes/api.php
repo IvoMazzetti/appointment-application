@@ -9,4 +9,4 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/calendar/services', [CalendarController::class, 'getServices'])->name('calendar.services');
-
+Route::get('/calendar/bookedSlots', [CalendarController::class, 'getBookedSlots'])->name('calendar.booked');

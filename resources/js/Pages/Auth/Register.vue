@@ -9,6 +9,10 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 const form = useForm({
     name: '',
     email: '',
+    phone: '',
+    industry: '',
+    logo: '',
+    address: '',
     password: '',
     password_confirmation: '',
 });
@@ -31,7 +35,7 @@ const submit = () => {
                 <TextInput
                     id="name"
                     type="text"
-                    class="mt-1 block w-full"
+                    class="block w-full mt-1"
                     v-model="form.name"
                     required
                     autofocus
@@ -47,7 +51,7 @@ const submit = () => {
                 <TextInput
                     id="email"
                     type="email"
-                    class="mt-1 block w-full"
+                    class="block w-full mt-1"
                     v-model="form.email"
                     required
                     autocomplete="username"
@@ -57,12 +61,71 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
+                <InputLabel for="phone" value="phone" />
+
+                <TextInput
+                    id="phone"
+                    type="tel"
+                    class="block w-full mt-1"
+                    v-model="form.phone"
+                    required
+                    autocomplete="phone"
+                />
+
+                <InputError class="mt-2" :message="form.errors.phone" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="industry" value="Industry" />
+
+                <TextInput
+                    id="industry"
+                    type="text"
+                    class="block w-full mt-1"
+                    v-model="form.industry"
+                    required
+                    autocomplete="industry"
+                />
+
+                <InputError class="mt-2" :message="form.errors.industry" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="logo" value="Logo" />
+
+                <TextInput
+                    id="logo"
+                    type="text"
+                    class="block w-full mt-1"
+                    v-model="form.logo"
+                    autocomplete="logo"
+                />
+
+                <InputError class="mt-2" :message="form.errors.logo" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="address" value="Address" />
+
+                <TextInput
+                    id="address"
+                    type="text"
+                    class="block w-full mt-1"
+                    v-model="form.address"
+                    required
+                    autocomplete="address"
+                />
+
+                <InputError class="mt-2" :message="form.errors.address" />
+            </div>
+
+            <div class="mt-4">
                 <InputLabel for="password" value="Password" />
 
                 <TextInput
                     id="password"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="block w-full mt-1"
                     v-model="form.password"
                     required
                     autocomplete="new-password"
@@ -77,7 +140,7 @@ const submit = () => {
                 <TextInput
                     id="password_confirmation"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="block w-full mt-1"
                     v-model="form.password_confirmation"
                     required
                     autocomplete="new-password"
@@ -89,7 +152,7 @@ const submit = () => {
             <div class="flex items-center justify-end mt-4">
                 <Link
                     :href="route('login')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    class="text-sm text-gray-600 underline rounded-md hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                     Already registered?
                 </Link>
